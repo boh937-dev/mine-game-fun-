@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dodgeball</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="hud">
+    <div id="status">Loading...</div>
+    <div id="scoreboard" class="scoreboardStrip">
+      <div class="scoreLane">
+        <div class="scoreSide">
+          <div class="scoreAvatar scoreAvatarLeft">1</div>
+          <div class="scoreText">
+            <div id="scoreLeftName" class="scoreName">P1</div>
+            <div id="scoreLeftValue" class="scoreValue">0</div>
+          </div>
+        </div>
+        <div class="scoreCenterTag" id="scoreToWin">TO 3</div>
+        <div class="scoreSide">
+          <div class="scoreAvatar scoreAvatarRight">2</div>
+          <div class="scoreText">
+            <div id="scoreRightName" class="scoreName">P2</div>
+            <div id="scoreRightValue" class="scoreValue">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button id="resetBtn">Reset Match</button>
+  </div>
+
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <!-- LOBBY -->
+  <div id="lobby" class="overlay">
+    <div class="panel">
+      <h1 id="gameTitle">Dodgeball</h1>
+      <p class="hint">P1: A/D move, W jump, S throw. P2: Left/Right move, Up jump, Down throw. ESC = Lobby.</p>
+
+      <div class="tabs">
+        <button id="tabLogin" class="tab active">Login</button>
+        <button id="tabSettings" class="tab">Settings</button>
+        <button id="tabClicker" class="tab">Clicker</button>
+        <button id="tabStory" class="tab tabStory">Story</button>
+        <button id="tabTower" class="tab">Tower Defense</button>
+        <button id="tabBoss" class="tab">Boss</button>
+        <button id="tabAnimation" class="tab">Animation Lab</button>
+        <button id="tabMusic" class="tab">Music</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="screenLogin">
+        <div class="grid2">
+          <div class="card">
+            <h2>P1 Account</h2>
+            <input id="p1User" placeholder="Username" />
+            <input id="p1Pass" placeholder="Password" type="password" />
+            <div class="row">
+              <button id="p1Register">Register</button>
+              <button id="p1Login">Login</button>
+              <button id="p1Logout" class="secondary">Logout</button>
+            </div>
+            <p id="p1LoginMsg" class="msg"></p>
+          </div>
+
+          <div class="card">
+            <h2>P2 Account</h2>
+            <input id="p2User" placeholder="Username" />
+            <input id="p2Pass" placeholder="Password" type="password" />
+            <div class="row">
+              <button id="p2Register">Register</button>
+              <button id="p2Login">Login</button>
+              <button id="p2Logout" class="secondary">Logout</button>
+            </div>
+            <p id="p2LoginMsg" class="msg"></p>
+          </div>
+        </div>
+
+        <div class="row center">
+          <button id="toSettingsBtn" class="primary">Go to Settings</button>
+          <button id="guestBtn" class="secondary">Play as Guests</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="screenSettings" style="display:none;">
+        <div class="grid2">
+          <div class="card">
+            <div class="topline">
+              <h2>P1</h2>
+              <div class="coins">Coins: <span id="coinP1">-</span></div>
+            </div>
+
+            <canvas id="p1Preview" width="220" height="120"></canvas>
+
+            <div class="row">
+              <button id="p1Prev">Prev</button>
+              <button id="p1Random">Random</button>
+              <button id="p1Next">Next</button>
+            </div>
+
+            <div class="row">
+              <select id="p1RarityFilter">
+                <option>All</option>
+                <option>Common</option>
+                <option>Rare</option>
+                <option>Epic</option>
+                <option>Mythic</option>
+              </select>
+              <button id="p1Buy" class="primary">Buy</button>
+            </div>
+
+            <h3 id="p1CharName"></h3>
+            <pre id="p1CharMeta" class="meta"></pre>
+            <div id="p1Lock" class="lock"></div>
+
+            <div class="row chestrow">
+              <div class="chestoption">
+                <div class="chestprice">50 coins</div>
+                <button id="p1ChestBasic">Open Basic Chest</button>
+              </div>
+              <div class="chestoption">
+                <div class="chestprice">120 coins</div>
+                <button id="p1ChestPremium">Open Premium Chest</button>
+              </div>
+            </div>
+            <p id="p1ChestMsg" class="msg"></p>
+          </div>
+
+          <div class="card">
+            <div class="topline">
+              <h2>P2</h2>
+              <div class="coins">Coins: <span id="coinP2">-</span></div>
+            </div>
+
+            <canvas id="p2Preview" width="220" height="120"></canvas>
+
+            <div class="row">
+              <button id="p2Prev">Prev</button>
+              <button id="p2Random">Random</button>
+              <button id="p2Next">Next</button>
+            </div>
+
+            <div class="row">
+              <select id="p2RarityFilter">
+                <option>All</option>
+                <option>Common</option>
+                <option>Rare</option>
+                <option>Epic</option>
+                <option>Mythic</option>
+              </select>
+              <button id="p2Buy" class="primary">Buy</button>
+            </div>
+
+            <h3 id="p2CharName"></h3>
+            <pre id="p2CharMeta" class="meta"></pre>
+            <div id="p2Lock" class="lock"></div>
+
+            <div class="row chestrow">
+              <div class="chestoption">
+                <div class="chestprice">50 coins</div>
+                <button id="p2ChestBasic">Open Basic Chest</button>
+              </div>
+              <div class="chestoption">
+                <div class="chestprice">120 coins</div>
+                <button id="p2ChestPremium">Open Premium Chest</button>
+              </div>
+            </div>
+            <p id="p2ChestMsg" class="msg"></p>
+          </div>
+        </div>
+
+        <div class="middleCoins">
+          <div class="midBox">
+            <div>P1 Coins</div>
+            <div class="big" id="p1CoinsMid">-</div>
+          </div>
+          <div class="midBox">
+            <div>P2 Coins</div>
+            <div class="big" id="p2CoinsMid">-</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h2>Match Settings</h2>
+            <label>Max Balls
+              <input id="maxBalls" type="number" min="1" max="20" value="10" />
+            </label>
+            <label>Spawn every (seconds)
+              <input id="spawnEvery" type="number" min="0.2" max="10" step="0.1" value="1" />
+            </label>
+            <label>Rounds to win
+              <input id="roundsToWin" type="number" min="1" max="10" value="3" />
+            </label>
+            <label>
+              <input id="bossModeToggle" type="checkbox" />
+              Boss Mode (P1 vs AI Boss)
+            </label>
+            <label>
+              <input id="teamBossModeToggle" type="checkbox" />
+              2 Players vs Boss (P1+P2 vs AI Boss)
+            </label>
+            <div class="row">
+              <button id="add1000Coins" class="secondary">+1000 Coins</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Start</h2>
+            <p class="hint">You can start as Guests or Logged-in players.</p>
+            <div class="row">
+              <button id="startBtn" class="primary">START GAME</button>
+              <button id="backToLogin" class="secondary">Back to Login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLICKER -->
+      <div id="screenClicker" style="display:none;">
+        <div class="grid2">
+          <div class="card clickerCard">
+            <h2>P1 Clicker</h2>
+            <p class="hint">Higher click power unlocks better character rarities automatically.</p>
+            <canvas id="clickerAvatarP1" class="clickerAvatar" width="220" height="120"></canvas>
+            <div class="clickerStats">
+              <div>Coins needed to upgrade: <span id="clickerCostP1">0</span> <span class="placeValue" id="clickerCostPlaceP1">(zero)</span></div>
+              <div>Coins currently: <span id="clickerCoinsP1">0</span> <span class="placeValue" id="clickerCoinsPlaceP1">(zero)</span></div>
+              <div>Coins per click: <span id="clickerPerClickP1">0</span> <span class="placeValue" id="clickerPerClickPlaceP1">(zero)</span></div>
+              <div>Current character: <span id="clickerCharNameP1">Rookie</span></div>
+            </div>
+            <div class="row">
+              <button id="clickerTapP1" class="primary">Tap Character</button>
+              <button id="clickerUpgradeP1">Buy Upgrade</button>
+            </div>
+            <p id="clickerMsgP1" class="msg"></p>
+          </div>
+
+          <div class="card clickerCard">
+            <h2>P2 Clicker</h2>
+            <p class="hint">Higher click power unlocks better character rarities automatically.</p>
+            <canvas id="clickerAvatarP2" class="clickerAvatar" width="220" height="120"></canvas>
+            <div class="clickerStats">
+              <div>Coins needed to upgrade: <span id="clickerCostP2">0</span> <span class="placeValue" id="clickerCostPlaceP2">(zero)</span></div>
+              <div>Coins currently: <span id="clickerCoinsP2">0</span> <span class="placeValue" id="clickerCoinsPlaceP2">(zero)</span></div>
+              <div>Coins per click: <span id="clickerPerClickP2">0</span> <span class="placeValue" id="clickerPerClickPlaceP2">(zero)</span></div>
+              <div>Current character: <span id="clickerCharNameP2">Rookie</span></div>
+            </div>
+            <div class="row">
+              <button id="clickerTapP2" class="primary">Tap Character</button>
+              <button id="clickerUpgradeP2">Buy Upgrade</button>
+            </div>
+            <p id="clickerMsgP2" class="msg"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STORY -->
+      <div id="screenStory" style="display:none;">
+        <div class="storyModeShell">
+          <div class="storyHero card">
+            <div>
+              <div class="storyEyebrow">Royal Archive</div>
+              <h2>Choose Your Chronicle</h2>
+              <p class="hint">Pick a book, make decisions, and try to unlock every ending. The first tale is fully playable and built with a medieval look.</p>
+            </div>
+            <div id="storyEndingCount" class="storyEndingCount">0 endings unlocked</div>
+          </div>
+
+          <div id="storyBookShelf" class="storyBookShelf"></div>
+
+          <div id="storyReader" class="storyReader card" style="display:none;">
+            <div class="storyReaderHead">
+              <div>
+                <div id="storyActiveBookTag" class="storyActiveBookTag">Book I</div>
+                <h2 id="storyTitle">Story Title</h2>
+              </div>
+              <div class="row">
+                <button id="storyBackBtn" class="secondary">Back to Books</button>
+                <button id="storyRestartBtn">Restart Tale</button>
+              </div>
+            </div>
+
+            <div class="storyReaderBody">
+              <div class="storyScenePanel">
+                <canvas id="storyArt" class="storyArt" width="640" height="360" aria-label="Story illustration"></canvas>
+                <div id="storyArtCaption" class="storyArtCaption">Illustrated page</div>
+                <div id="storySceneTitle" class="storySceneTitle">Chapter Title</div>
+                <p id="storySceneText" class="storySceneText"></p>
+                <div id="storyEndingBadge" class="storyEndingBadge" style="display:none;"></div>
+              </div>
+
+              <div class="storyChoicePanel">
+                <div class="storyChoiceHead">Choose What Happens Next</div>
+                <div id="storyChoices" class="storyChoices"></div>
+                <p id="storyProgress" class="storyProgress hint"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOWER DEFENSE -->
+      <div id="screenTower" style="display:none;">
+        <div class="grid2">
+          <div class="card">
+            <h2>Tower Defense</h2>
+            <p class="hint">Use your unlocked characters as towers. Click a character in the bottom roster bar, then click the arena to place them.</p>
+            <label>Use unlocked roster from
+              <select id="towerRosterOwner">
+                <option value="P1">P1 Account</option>
+                <option value="P2">P2 Account</option>
+                <option value="BOTH">Both Accounts</option>
+              </select>
+            </label>
+            <div class="towerRules">
+              <div>Each Common: place up to 6</div>
+              <div>Each Rare: place up to 4</div>
+              <div>Each Epic: place up to 3</div>
+              <div>Each Mythic: place up to 2</div>
+            </div>
+            <div class="row">
+              <button id="towerStartBtn" class="primary">START TOWER DEFENSE</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>How It Works</h2>
+            <p class="hint">Waves get stronger over time. Towers auto-throw dodgeballs and auto-use their ability every 5 seconds. You earn more coins the longer your base survives.</p>
+            <div class="towerRules">
+              <div>Place towers above or below the path.</div>
+              <div>Towers can overlap if you want to stack them.</div>
+              <div>Enemies that reach the right side damage your base.</div>
+              <div>Every 5th wave spawns a boss and later bosses are stronger.</div>
+              <div>Press ESC to leave and keep the coins you earned in the run.</div>
+              <div>Reset Match restarts the current tower defense run.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOSS -->
+      <div id="screenBoss" style="display:none;">
+        <div class="card">
+          <h2>Boss Character</h2>
+          <p class="hint">Used in Boss Mode and 2 Players vs Boss.</p>
+
+          <canvas id="bossPreview" width="220" height="120"></canvas>
+
+          <div class="row">
+            <button id="bossPrev">Prev</button>
+            <button id="bossRandom">Random</button>
+            <button id="bossNext">Next</button>
+          </div>
+
+          <div class="row">
+            <select id="bossRarityFilter">
+              <option>All</option>
+              <option>Common</option>
+              <option>Rare</option>
+              <option>Epic</option>
+              <option>Mythic</option>
+            </select>
+          </div>
+
+          <h3 id="bossCharName"></h3>
+          <pre id="bossCharMeta" class="meta"></pre>
+          <div id="bossModeHint" class="lock">Boss picks do not require unlocks.</div>
+        </div>
+      </div>
+
+      <!-- ANIMATION -->
+      <div id="screenAnimation" style="display:none;">
+        <div class="animationStudio">
+          <div class="card animationStageCard">
+            <div class="animationStageHead">
+              <div>
+                <h2>Animation Lab</h2>
+                <p class="hint">Drag character stickers into the canvas, build frames, press play, and change the playback speed.</p>
+              </div>
+              <div class="animationTransport">
+                <button id="animationPlayBtn" class="primary">Play</button>
+                <button id="animationPauseBtn">Pause</button>
+                <button id="animationResetBtn" class="secondary">Reset Scene</button>
+                <button id="animationDeleteStickerBtn">Delete Sticker</button>
+              </div>
+            </div>
+            <canvas id="animationPreview" width="460" height="260"></canvas>
+            <div class="animationStageMeta">
+              <div id="animationFrameStatus" class="lock">Frame 1 of 1</div>
+              <div id="animationSelectionStatus" class="lock">Drop a sticker into the stage to start.</div>
+            </div>
+          </div>
+
+          <div class="card animationSidebar">
+            <h2>Stage</h2>
+            <label>Creation name
+              <input id="animationProjectName" type="text" maxlength="60" placeholder="My dodgeball scene" />
+            </label>
+            <label>Background
+              <select id="animationBackdrop">
+                <option value="arena">Arena</option>
+                <option value="sunset">Sunset</option>
+                <option value="night">Night</option>
+              </select>
+            </label>
+            <label>Playback speed
+              <input id="animationSpeed" type="range" min="0.25" max="3" step="0.25" value="1" />
+            </label>
+            <div id="animationSpeedLabel" class="lock">1.00x speed</div>
+            <label>Selected frame duration (ms)
+              <input id="animationFrameDuration" type="number" min="100" max="4000" step="50" value="700" />
+            </label>
+            <div class="row">
+              <button id="animationSaveBtn" class="primary">Save Creation</button>
+            </div>
+            <div id="animationSaveStatus" class="lock">Nothing saved yet.</div>
+            <div class="towerRules">
+              <div>Drag a sticker from the roster into the stage.</div>
+              <div>Use Add Frame to make a new frame from the current one, then move or change stickers.</div>
+              <div>Play switches frame by frame using the speed and frame time you set.</div>
+              <div>Pause anytime to drag characters and fine tune the current frame.</div>
+              <div>Right click a frame to rename it.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid2 animationGrid">
+          <div class="card">
+            <div class="animationSectionHead">
+              <h2>Character Stickers</h2>
+              <div class="lock">Drag onto the stage</div>
+            </div>
+            <div id="animationStickerPalette" class="animationStickerPalette"></div>
+          </div>
+
+          <div class="card">
+            <div class="animationSectionHead">
+              <h2>Frames</h2>
+              <div class="row">
+                <button id="animationAddFrameBtn" class="primary">Add Frame</button>
+                <button id="animationDeleteFrameBtn">Delete Frame</button>
+              </div>
+            </div>
+            <div id="animationFramesList" class="animationFramesList"></div>
+          </div>
+        </div>
+
+        <div class="animationGrid">
+          <div class="card">
+            <div class="animationSectionHead">
+              <h2>Saved Creations</h2>
+              <div id="animationSavedCount" class="lock">0 saved</div>
+            </div>
+            <div id="animationSavedProjects" class="animationSavedProjects"></div>
+          </div>
+        </div>
+
+        <div class="grid2 animationGrid">
+          <div class="card">
+            <div class="animationSectionHead">
+              <h2>Selected Sticker</h2>
+              <div id="animationEditorHint" class="lock">Select a sticker in the stage.</div>
+            </div>
+            <label>Character
+              <select id="animationStickerChar"></select>
+            </label>
+            <label>Motion
+              <select id="animationStickerMotion">
+                <option value="idle">Idle</option>
+                <option value="walk">Walk</option>
+                <option value="jump">Jump</option>
+                <option value="throw">Throw</option>
+                <option value="dance">Dance</option>
+              </select>
+            </label>
+            <label>X Position
+              <input id="animationStickerX" type="range" min="40" max="420" value="230" />
+            </label>
+            <label>Y Position
+              <input id="animationStickerY" type="range" min="120" max="240" value="210" />
+            </label>
+            <label>Size
+              <input id="animationStickerSize" type="range" min="0.5" max="2.5" step="0.1" value="1" />
+            </label>
+            <label>Width
+              <input id="animationStickerWidth" type="range" min="0.5" max="3" step="0.1" value="1" />
+            </label>
+            <label>Height
+              <input id="animationStickerHeight" type="range" min="0.5" max="3" step="0.1" value="1" />
+            </label>
+            <label>Facing
+              <select id="animationStickerFacing">
+                <option value="1">Right</option>
+                <option value="-1">Left</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="card">
+            <div class="animationSectionHead">
+              <h2>Frame Speech</h2>
+              <div class="lock">One bubble per frame</div>
+            </div>
+            <label>Text
+              <textarea id="animationFrameText" rows="4" placeholder="Type what this frame says..."></textarea>
+            </label>
+            <label>Bubble speaker
+              <select id="animationFrameSpeaker">
+                <option value="">No bubble</option>
+              </select>
+            </label>
+            <label>Bubble style
+              <select id="animationBubbleStyle">
+                <option value="rounded">Rounded</option>
+                <option value="shout">Shout</option>
+                <option value="thought">Thought</option>
+              </select>
+            </label>
+            <div class="grid2">
+              <label>Bubble color
+                <input id="animationBubbleColor" type="color" value="#ffffff" />
+              </label>
+              <label>Text color
+                <input id="animationBubbleTextColor" type="color" value="#111111" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MUSIC -->
+      <div id="screenMusic" style="display:none;">
+        <div class="card">
+          <h2>Music Lab Track</h2>
+          <p class="hint">Press play in the embedded player.</p>
+          <iframe
+            src="https://musiclab.chromeexperiments.com/Song-Maker/song/5798384614637568"
+            width="100%"
+            height="420"
+            style="border:0; border-radius:10px; background:#111;"
+            loading="lazy"
+            allow="autoplay">
+          </iframe>
+          <div class="row" style="margin-top:10px;">
+            <a href="https://musiclab.chromeexperiments.com/Song-Maker/song/5798384614637568" target="_blank" rel="noopener noreferrer">Open Song Maker in new tab</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
+
