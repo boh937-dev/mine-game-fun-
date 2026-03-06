@@ -958,9 +958,9 @@ const MULTI_SHOT_SPEED_MUL = 1.05;
   }
 
   function clickerUnlockedRarityRank(perClick) {
-    if (perClick >= 0.001) return 4; // Mythic
-    if (perClick >= 0.0001) return 3; // Epic
-    if (perClick >= 0.00001) return 2; // Rare
+    if (perClick >= 0.1) return 4; // Mythic
+    if (perClick >= 0.01) return 3; // Epic
+    if (perClick >= 0.001) return 2; // Rare
     return 1; // Common
   }
 
@@ -5771,7 +5771,6 @@ ${c.desc}`;
   lobbyEl.style.display = "flex";
   requestAnimationFrame(step);
 })();
-
 
 
 
